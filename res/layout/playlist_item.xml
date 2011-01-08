@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    xmlns:android					= "http://schemas.android.com/apk/res/android"
+    android:id 						= "@+id/infoLayout"
+    android:layout_width			= "fill_parent"
+    android:layout_height			= "wrap_content"
+    android:background				= "@drawable/list_item_background"> 
+    <RelativeLayout
+    	android:id					= "@+id/albumImageHolderLayout"
+    	android:layout_width		= "56px"
+    	android:layout_height		= "wrap_content"
+    	android:background			= "@drawable/pls_album_image_holder_background"
+    	android:layout_marginLeft   = "5dp"
+    	android:layout_marginTop    = "5dp"
+    	android:layout_marginBottom = "5dp">
+    <ImageView
+    	android:id 					= "@+id/albumImageHolder"
+    	android:layout_width 		= "55px"
+    	android:layout_height 		= "55px"
+    	android:scaleType			= "fitCenter"/>
+	</RelativeLayout>    
+   	<TextView
+		android:id					= "@+id/titleTextHolder"
+		android:layout_width		= "fill_parent"
+		android:gravity				= "left"
+		android:text				= "text"
+		android:visibility			= "visible"
+		android:textColor			= "#272727"
+		android:textSize 			= "16dp"
+		android:maxHeight 			= "24dp"
+		android:maxLength 			= "30"
+	    android:layout_marginLeft 	= "5dp"
+	    android:paddingTop 			= "2dp"
+	    android:layout_toRightOf 	= "@id/albumImageHolderLayout"
+	    android:layout_height		= "wrap_content"/>
+	    
+	<TextView
+		android:id 					= "@+id/artistTextHolder"
+		android:layout_width 		= "wrap_content"
+		android:layout_height 		= "wrap_content"
+		android:textColor 			= "#272727" 
+		android:text 				= "unknown"
+		android:textSize 			= "13dp"
+		android:layout_below 		= "@id/titleTextHolder"
+		android:layout_toRightOf 	= "@id/albumImageHolderLayout"
+		android:layout_marginLeft 	= "5dp"
+		android:maxLength 			= "25" 
+		android:layout_marginTop	= "5dp"/>
+			
+	<View 
+		android:id 					= "@+id/line"
+		android:layout_width 		= "fill_parent"
+		android:background 			= "#dadada"
+		android:layout_below 		= "@id/albumImageHolderLayout"
+	    android:layout_height		="2dp"/>	 
+</RelativeLayout>
+
