@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements
         
         controller.setOnPlaylistStatusChanged(this);
         controller.setOnSmpPlayerProgressChanged(this);
-        controller.setOnSmpPlayerCompletetionsListener(this);
+        controller.setOnSmpPlayerCompletetionsListener(Controller.MAIN_ACTIVITY_ID, this);
         
         playSongButton.setOnClickListener(this);
         nextSongButton.setOnClickListener(this);
@@ -109,9 +109,11 @@ public class MainActivity extends Activity implements
 		case Playlist.STATUS_PLAYLIST_LOAD_FINISHED:
 												 Log.e(TAG, "playlist loaded: " + playlist.getName() + " " + playlist.getCount());
 												 
+												 /*
 												 if(!controller.isPlaying())
 													 controller.sendPlayerCommand(SmpPlayer.COMMAND_PLAY, -1);
-												 												 
+												 	
+												 */
 												 break;
 
 		default:
@@ -144,8 +146,7 @@ public class MainActivity extends Activity implements
 								break;
 		default:
 			break;
-		}
-		
+		}		
 	}
 
 	@Override
@@ -153,7 +154,7 @@ public class MainActivity extends Activity implements
 		if(progressBar.getMax() != duration)
 			progressBar.setMax(duration);
 		
-		Log.e(TAG, "newProgress: " + newProgress + " duration: " + duration);
+		//Log.e(TAG, "newProgress: " + newProgress + " duration: " + duration);
 		progressBar.setProgress(newProgress);
 	}
 

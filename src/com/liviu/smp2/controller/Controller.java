@@ -75,9 +75,9 @@ public class Controller {
 		smpServiceConnection.setOnPlaylistStatusChanged(onPlaylistStatusChanged);
 	}
 
-	public void sendPlayerCommand(int command, int progress){
+	public void sendPlayerCommand(int command, int data){
 		Log.e(TAG, "sendPlayerCommand: " + command);
-		smpServiceConnection.sendPlayerCommand(command, progress);
+		smpServiceConnection.sendPlayerCommand(command, data);
 	}
 
 	public boolean isPlaying() {
@@ -93,8 +93,9 @@ public class Controller {
 		smpServiceConnection.setOnSmpPlayerProgressChanged(onSmpPlayerProgressChanged);
 	}
 
-	public void setOnSmpPlayerCompletetionsListener(OnSmpPlayerCompletetionListener listener) {
-		smpServiceConnection.setOnSmpPlayerCompletetionListener(listener);
+	public void setOnSmpPlayerCompletetionsListener(int activityID_, OnSmpPlayerCompletetionListener listener) {
+		activityID = activityID_;
+		smpServiceConnection.setOnSmpPlayerCompletetionListener(activityID, listener);
 	}
 
 	public void pauseSmpPlayerProgressChangedListener(boolean pause) {

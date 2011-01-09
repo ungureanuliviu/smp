@@ -6,13 +6,17 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -26,6 +30,7 @@ import com.liviu.smp2.services.SmpPlayer;
 
 public class PlaylistActivity extends Activity implements OnPlaylistStatusChanged,
 														  OnItemClickListener,
+														  OnItemLongClickListener,
 														  OnSmpPlayerCompletetionListener,
 														  OnGestureListener,
 														  OnDoubleTapListener{
@@ -33,10 +38,17 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 	// constants
 	private final String 			TAG			= "PlaylistActivity";
 	
+	// menu ids
+	private final int				MENU_PLAY	= 1;
+	private final int				MENU_RATE	= 2;
+	private final int				MENU_FAV	= 3;
+	private final int				MENU_IGNORE = 4;
+	private final int				MENU_DELETE	= 5;
+	
 	// data
 	private Controller				controller;
 	private PlaylistAdapter			adapter;
-	private int						position;
+	private int						adapterPosition;			
 	
 	// views
 	private ListView				listView;
@@ -58,7 +70,7 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		listView		= (ListView)findViewById(R.id.songs_list);
 		loadingDialog	= new ProgressDialog(this);
 		gestureDetector	= new GestureDetector(this);
-		position	 	= 0;
+		adapterPosition = 0;
 		
 		
 		// setting up
@@ -72,8 +84,10 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		loadingDialog.show();
 		
 		controller.setOnPlaylistStatusChanged(this);
-		controller.setOnSmpPlayerCompletetionsListener(this);
+		controller.setOnSmpPlayerCompletetionsListener(Controller.PLAYLIST_ACTIVITY_ID, this);
 		listView.setOnItemClickListener(this);
+		listView.setOnItemLongClickListener(this);
+		registerForContextMenu(listView);
 	}
 	
 	@Override
@@ -102,7 +116,7 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		Log.e(TAG, "onPlaylistStatusChangeed: " + status);		
 		switch (status) {
 		case Playlist.STATUS_PLAYLIST_LOAD_FINISHED:
-						adapter.setItems(controller.getCurrentPlaylistAsHashmap());
+						adapter.setItems(controller.getCurrentPlaylistAsHashmap());						
 						listView.setAdapter(adapter);
 						loadingDialog.dismiss();
 			break;
@@ -113,10 +127,27 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View convertView, int position_, long itemID) {
-		Log.e(TAG, "onItemClick");
-		position = position_;
+	public void onItemClick(AdapterView<?> arg0, View convertView, int position, long itemID) {
+		Log.e(TAG, "onItemClick");		
+		
+		controller.sendPlayerCommand(SmpPlayer.COMMAND_PLAY_BY_ID, adapter.getItem(position).getId());
+		for(int i = 0; i < adapter.getCount(); i++){
+			if(adapter.getItem(i).isPlaying() && adapter.getItem(i).getId() != adapter.getItem(position).getId()){
+				adapter.getItem(i).setPlaying(false);
+			}
+		}
+		
+		adapter.getItem(position).setPlaying(true);
+		adapter.notifyDataSetChanged();
+		adapterPosition = position;
 	}
+	
+	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View convertView, int position, long arg3) {
+		adapterPosition = position;
+		return false;
+	}
+		
 
 	@Override
 	public void onPlayerComplete(MediaPlayer mp, Song song) {
@@ -174,20 +205,13 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		Log.e(TAG, "onFling");
 		return false;
 	}
-
+	
+	
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-		Log.e(TAG, "onSingleTapConfirmed: position " + position + " " + adapter.getItem(position));
+		Log.e(TAG, "onSingleTapConfirmed");
 
-		controller.sendPlayerCommand(SmpPlayer.COMMAND_PLAY_BY_ID, adapter.getItem(position).getId());
-		for(int i = 0; i < adapter.getCount(); i++){
-			if(adapter.getItem(i).isPlaying() && adapter.getItem(i).getId() != adapter.getItem(position).getId()){
-				adapter.getItem(i).setPlaying(false);
-			}
-		}
 		
-		adapter.getItem(position).setPlaying(true);
-		adapter.notifyDataSetChanged();		
 		return false;
 	}
 
@@ -202,5 +226,30 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		Log.e(TAG, "onDoubleTapEvent");
 		return false;
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		Song selectedSong = (Song)adapter.getItem(adapterPosition);
+		
+		if(selectedSong != null){
+			menu.setHeaderTitle(selectedSong.getTitle());		
+			menu.add(0, MENU_PLAY,   0, getText(R.string.context_menu_play));					
+			menu.add(0, MENU_FAV,    1, (selectedSong.isFavorite() == true ? getText(R.string.context_menu_remove_from_fav) : getText(R.string.context_menu_add_to_fav)));
+			menu.add(0, MENU_RATE,   2, getText(R.string.context_menu_rate));
+			menu.add(0, MENU_IGNORE, 3, (selectedSong.isIgnored() == true ? getText(R.string.context_menu_remove_ignore) : getText(R.string.context_menu_add_to_ignore)));
+			menu.add(0, MENU_DELETE, 4, getText(R.string.context_menu_delete));
+		}
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {	
+		
+		Log.e(TAG, "selected menu ID: " + item.getItemId());
+		return super.onContextItemSelected(item);
+	}
+
+
 	
 }

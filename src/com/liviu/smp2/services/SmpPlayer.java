@@ -74,7 +74,7 @@ public class SmpPlayer extends MediaPlayer{
 			public void handleMessage(android.os.Message msg) {
 				switch (msg.what) {
 				case MSG_UPDATE_PROGRESS:																				
-										Log.e(TAG, "current position is: " + elapsedSeconds + "/" + duration + " listener: " + onSmpPlayerProgressChanged);
+										//Log.e(TAG, "current position is: " + elapsedSeconds + "/" + duration + " listener: " + onSmpPlayerProgressChanged);
 										if(onSmpPlayerProgressChanged != null)
 											onSmpPlayerProgressChanged.onProgressChanged(SmpPlayer.this, elapsedSeconds, duration);
 										break;

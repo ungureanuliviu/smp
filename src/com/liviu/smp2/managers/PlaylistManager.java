@@ -208,13 +208,24 @@ public class PlaylistManager {
 	public Song getSongWithID(int id) {
 		if(currentPlaylist != null){
 			if(!currentPlaylist.isEmpty()){
-				return currentPlaylist.getSongWithID(id);				
+				Object[] response = currentPlaylist.getSongWithID(id);
+				
+				if(response != null){
+					currentPlaylistPosition = (Integer)response[1];
+					return (Song)response[0];
+				}
+				else
+					return null;				
 			}
 			else
 				return null;
 		}
 		else
 			return null;
+	}
+
+	public void updatePlayingCount(Song song) {
+		dbManager.updatePlayedCount(song.getPlayCount() + 1, song);
 	}
 
 }

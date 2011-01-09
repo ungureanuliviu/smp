@@ -116,12 +116,20 @@ public class SmpService extends Service implements OnErrorListener{
 		case SmpPlayer.COMMAND_PLAY:
 									Log.e(TAG, "sendPlayerCommand: PLAY " + command + " " + player.getCurrentPosition());
 									if(!player.isDataSourceLoaded()){
-										player = new SmpPlayer(this);
-										setPlayerListeners();
-										player.play(playlistManager.getCurrentSong());
+										
+										player 			= new SmpPlayer(this);																				
+										Song tempSong1 	= playlistManager.getCurrentSong();
+										
+										if(tempSong1 != null){
+											setPlayerListeners();
+											player.play(tempSong1);											
+										}
+										else
+											Log.e(TAG, "tempSong1 is null");
 									}
 									else
-										player.play();																			
+										player.play();	
+									
 									break;
 		case SmpPlayer.COMMAND_PLAY_BY_ID:
 									Log.e(TAG, "sendPlayerCommand: PLAY " + command + " " + player.getCurrentPosition() + " id: " + data);
@@ -132,9 +140,16 @@ public class SmpService extends Service implements OnErrorListener{
 										player.release();																												
 									}
 									
-									player = new SmpPlayer(this);
-									setPlayerListeners();
-									player.play(playlistManager.getSongWithID(data));																		
+									player	       = new SmpPlayer(this);									
+									Song tempSong2 = playlistManager.getSongWithID(data);
+									
+									if(tempSong2 != null){
+										setPlayerListeners();
+										player.play(tempSong2);
+									}
+									else
+										Log.e(TAG, "tempSong2 is null");
+									
 									break;									
 		case SmpPlayer.COMMAND_PAUSE:
 									Log.e(TAG, "sendPlayerCommand: PAUSE " + command);
@@ -155,9 +170,15 @@ public class SmpService extends Service implements OnErrorListener{
 										player.release();																												
 									}
 									
-									player = new SmpPlayer(this);
-									setPlayerListeners();
-									player.play(playlistManager.getNextSong());
+									player 			= new SmpPlayer(this);									
+									Song tempSong3 	= playlistManager.getNextSong();
+									
+									if(tempSong3 != null){
+										setPlayerListeners();
+										player.play(tempSong3);
+									}
+									else
+										Log.e(TAG, "tempSong3 is null");
 									
 									break;
 		case SmpPlayer.COMMAND_PREV:
@@ -170,9 +191,15 @@ public class SmpService extends Service implements OnErrorListener{
 										player.release();																												
 									}
 									
-									player = new SmpPlayer(this);
-									setPlayerListeners();
-									player.play(playlistManager.getPrevSong());
+									player 			= new SmpPlayer(this);									
+									Song tempSong4 	= playlistManager.getPrevSong();
+									
+									if(tempSong4 != null){
+										setPlayerListeners();									
+										player.play(tempSong4);
+									}
+									else
+										Log.e(TAG, "tempSong4 is null");
 									
 									break;	
 		case SmpPlayer.COMMAND_SEEK_TO:
@@ -207,10 +234,21 @@ public class SmpService extends Service implements OnErrorListener{
 
 	public void setOnSmpPlayerCompletetionListener(int activityID_, OnSmpPlayerCompletetionListener listener) {
 		final OnSmpPlayerCompletetionListener userListener = listener;
+		
+		setActivityID(activityID_);
 		onSmpPlayerCompletetionListener = new OnSmpPlayerCompletetionListener() {
 			
 			@Override
 			public void onPlayerComplete(MediaPlayer mp, Song song) {
+				if(song == null){
+					Log.e(TAG, "aici song is null");
+					return;
+				}
+				else
+					Log.e(TAG, "Aici song is: " + song);
+				// this is the song what is finished
+				playlistManager.updatePlayingCount(song);
+				// this is the first song after the current one is finished
 				sendPlayerCommand(SmpPlayer.COMMAND_NEXT, -1);
 				userListener.onPlayerComplete(mp, song);				
 			}

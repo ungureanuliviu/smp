@@ -97,17 +97,20 @@ public class Playlist {
 		return playlistSongs.get(index);
 	}
 
-	public Song getSongWithID(int id) {
+	public Object[] getSongWithID(int id) {
 		
 		Set<Integer> 	  keySet 		= playlistSongs.keySet();
 		Iterator<Integer> keyIterator 	= keySet.iterator();
 		int				  position		= 0;
+		Object[]		  objects		= new Object[2];
 		
 		while(keyIterator.hasNext()){
 			position = (int)keyIterator.next();
 			
 			if(playlistSongs.get(position).getId() == id){
-				return playlistSongs.get(position);			
+				objects[0] = playlistSongs.get(position);
+				objects[1] = position;
+				return objects;
 			}
 		}
 		return null;

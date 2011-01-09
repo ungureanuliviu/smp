@@ -4,4 +4,13 @@
     <string name="app_name">SMP2</string>
     <string name="menu_playlist">To Playlist</string>
     <string name="loading_bar_text">Loading...</string>
+    
+    <!-- PlaylistActivity -->
+    <string name="context_menu_play">Play</string>
+    <string name="context_menu_rate">Rate</string>
+    <string name="context_menu_add_to_fav">Add to favorites</string>
+    <string name="context_menu_remove_from_fav">Remove from favorites</string>
+    <string name="context_menu_add_to_ignore">Ignore</string>
+    <string name="context_menu_remove_ignore">Remove ignore</string>
+    <string name="context_menu_delete">Delete</string>
 </resources>

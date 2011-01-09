@@ -139,22 +139,22 @@ public class SmpServiceConnection implements ServiceConnection{
 			return boundSmpService.isPlaying();
 	}
 
-	public void sendPlayerCommand(int command_, int progress_) {
+	public void sendPlayerCommand(int command_, int data_) {
 		final int command  = command_;
-		final int progress = progress_;
+		final int data	   = data_;
 		
 		if(isBound && boundSmpService == null){
 			serviceTasks.add(new Runnable() {				
 				@Override
 				public void run() {
-					Log.e(TAG, "in sendPlayerCommand1 " + command);
-					boundSmpService.sendPlayerCommand(command, progress);
+					Log.e(TAG, "in sendPlayerCommand1 " + command + " data: " + data);
+					boundSmpService.sendPlayerCommand(command, data);
 				}
 			});
 		}
 		else if(isBound && boundSmpService != null){
-			Log.e(TAG, "in sendPlayerCommand2 " + command);
-			boundSmpService.sendPlayerCommand(command, progress);
+			Log.e(TAG, "in sendPlayerCommand2 " + command + " data: " + data);
+			boundSmpService.sendPlayerCommand(command, data);
 		}
 	}
 
@@ -178,9 +178,10 @@ public class SmpServiceConnection implements ServiceConnection{
 			Log.e(TAG, "test");
 	}
 
-	public void setOnSmpPlayerCompletetionListener(OnSmpPlayerCompletetionListener listener) {
+	public void setOnSmpPlayerCompletetionListener(int activityID_, OnSmpPlayerCompletetionListener listener) {
 		final OnSmpPlayerCompletetionListener localListener = listener;
-		Log.e(TAG, "here: + " + localListener);
+		Log.e(TAG, "setOnSmpPlayerCompletetionListener: + " + localListener + " activityID_ " + activityID_);
+		activityID = activityID_;
 		
 		if(isBound && boundSmpService == null){
 			serviceTasks.add(new Runnable() {				

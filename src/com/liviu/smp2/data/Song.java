@@ -257,5 +257,13 @@ public class Song {
 			return false;
 	}
 	
+	public void setSongInfo(SongInfo songInfo){
+		playCount 	= songInfo.getPlayedCountInfo();
+		isFavorite 	= songInfo.getIgnoredInfo();
+		isIgnored 	= songInfo.getIgnoredInfo();
+		rate 		= songInfo.getRateInfo();
+		albumName 	= songInfo.getAlbumNameInfo();
+		
+	}
 
 }
