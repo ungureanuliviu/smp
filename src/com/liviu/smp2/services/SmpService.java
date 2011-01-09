@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.liviu.smp2.controller.Controller;
 import com.liviu.smp2.controller.interfaces.OnPlaylistStatusChanged;
 import com.liviu.smp2.controller.interfaces.OnSmpPlayerCompletetionListener;
 import com.liviu.smp2.controller.interfaces.OnSmpPlayerProgressChangedListener;
@@ -27,6 +28,7 @@ public class SmpService extends Service implements OnErrorListener{
 	private LocalBinder  			binder  = new LocalBinder();
 	private SmpPlayer				player;
 	private PlaylistManager			playlistManager;
+	private int						activityID;
 	
 	// listeners
 	private OnSmpPlayerProgressChangedListener	onSmpPlayerProgressChangedListener;
@@ -43,13 +45,13 @@ public class SmpService extends Service implements OnErrorListener{
 		player								  = new SmpPlayer(this);
 		playlistManager						  = new PlaylistManager(this);
 		pauseSmpPlayerProgressChangedListener = false;
+		activityID							  = Controller.MAIN_ACTIVITY_ID;
 		
 	}
 	
 	public void test(String text){
 		Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
 	}
-	
 
 	
 	
@@ -188,7 +190,7 @@ public class SmpService extends Service implements OnErrorListener{
 		player.setOnErrorListener(this);
 		player.pauseSmpPlayerProgressChangedListener(pauseSmpPlayerProgressChangedListener);
 		player.setOnSmpPlayerProgressChanged(onSmpPlayerProgressChangedListener);
-		player.setOnSmpPlayerCompletetionListener(onSmpPlayerCompletetionListener);		
+		player.setOnSmpPlayerCompletetionListener(activityID, onSmpPlayerCompletetionListener);		
 		
 	}
 	@Override
@@ -203,17 +205,18 @@ public class SmpService extends Service implements OnErrorListener{
 		player.setOnSmpPlayerProgressChanged(onSmpPlayerProgressChangedListener);
 	}
 
-	public void setOnSmpPlayerCompletetionListener(OnSmpPlayerCompletetionListener listener) {
+	public void setOnSmpPlayerCompletetionListener(int activityID_, OnSmpPlayerCompletetionListener listener) {
 		final OnSmpPlayerCompletetionListener userListener = listener;
 		onSmpPlayerCompletetionListener = new OnSmpPlayerCompletetionListener() {
 			
 			@Override
 			public void onPlayerComplete(MediaPlayer mp, Song song) {
-				userListener.onPlayerComplete(mp, song);
 				sendPlayerCommand(SmpPlayer.COMMAND_NEXT, -1);
+				userListener.onPlayerComplete(mp, song);				
 			}
 		};
-		player.setOnSmpPlayerCompletetionListener(onSmpPlayerCompletetionListener);
+		Log.e(TAG, "activityID in SmpService is: " + activityID + " " + onSmpPlayerCompletetionListener + " " + listener);
+		player.setOnSmpPlayerCompletetionListener(activityID_, onSmpPlayerCompletetionListener);
 		
 	}
 
@@ -232,12 +235,14 @@ public class SmpService extends Service implements OnErrorListener{
 			return null;
 	}
 	
-	public void setActivityID(int activity_id){
+	public void setActivityID(int activity_id){		
 		playlistManager.setActivityID(activity_id);
+		player.setActivityID(activity_id);
+		activityID = activity_id;
 	}
 	
 	public int getActivityID(){
-		return playlistManager.getActivityID();
+		return activityID;
 	}
 
 	public void releaseListeners() {
@@ -246,6 +251,11 @@ public class SmpService extends Service implements OnErrorListener{
 
 	public void playSongWithID(int id) {
 		player.play(playlistManager.getSongWithID(id));
+	}
+
+	public Song getCurrentSong() {
+		return playlistManager.getCurrentSong();
+		
 	}
 
 }

@@ -25,7 +25,7 @@ public class SmpServiceConnection implements ServiceConnection{
 	private SmpService				boundSmpService;
 	private Context					context;
 	private ArrayList<Runnable>		serviceTasks;
-	
+	private int						activityID;
 	
 	// listeners
 	private OnSmpServiceConnected	onSmpServiceConnected;
@@ -33,17 +33,22 @@ public class SmpServiceConnection implements ServiceConnection{
 	// flags
 	private boolean					isBound;
 	
-	public SmpServiceConnection(Context context_) {
+	public SmpServiceConnection(Context context_, int activityID_) {
 		Log.e(TAG, "constructor");
 		
 		context 			= context_;
 		isBound 			= false;
 		serviceTasks		= new ArrayList<Runnable>();
+		activityID			= activityID_;
 		context.startService(new Intent(context, SmpService.class));
 	}
 	
 	public void setOnSmpServiceConnected(OnSmpServiceConnected onSmpServiceConnected) {
 		this.onSmpServiceConnected = onSmpServiceConnected;
+	}
+	
+	public void startService() {
+		
 	}
 	
 	public void bindSmpService(){
@@ -75,6 +80,11 @@ public class SmpServiceConnection implements ServiceConnection{
 		// trigger the listener
 		if(onSmpServiceConnected != null)
 			onSmpServiceConnected.onSmpServiceConnected(name, service, boundSmpService);
+		
+		if(boundSmpService != null)
+			boundSmpService.setActivityID(activityID);
+		else
+			Log.e(TAG, "cannot set activityID for service: " + boundSmpService);
 		
 	}
 	
@@ -177,12 +187,12 @@ public class SmpServiceConnection implements ServiceConnection{
 				@Override
 				public void run() {
 					Log.e(TAG, "in run setOnSmpPlayerCompletetionListener");
-					boundSmpService.setOnSmpPlayerCompletetionListener(localListener);
+					boundSmpService.setOnSmpPlayerCompletetionListener(activityID, localListener);
 				}
 			});
 		}
 		else if(isBound && boundSmpService != null){
-			boundSmpService.setOnSmpPlayerCompletetionListener(localListener);
+			boundSmpService.setOnSmpPlayerCompletetionListener(activityID, localListener);
 		}
 		else
 			Log.e(TAG, "test2");		
@@ -274,4 +284,15 @@ public class SmpServiceConnection implements ServiceConnection{
 		}
 		
 	}
+
+	public Song getCurrentSong() {	
+		
+		if(isBound && boundSmpService != null){
+			return boundSmpService.getCurrentSong();
+		}
+		else
+			return null;
+		}
+
+
 }

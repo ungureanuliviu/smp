@@ -46,6 +46,15 @@
 		android:layout_marginLeft 	= "5dp"
 		android:maxLength 			= "25" 
 		android:layout_marginTop	= "5dp"/>
+	<View 
+		android:id 					    = "@+id/is_playing"
+		android:layout_width 		    = "10dp"
+		android:layout_height		    ="10dp"
+		android:background 			    = "#7AB317"
+		android:layout_alignParentRight	= "true"
+		android:layout_marginTop        = "25dp"
+		android:layout_marginRight 	 	= "5dp"
+		android:visibility				= "gone"/>	 		
 			
 	<View 
 		android:id 					= "@+id/line"

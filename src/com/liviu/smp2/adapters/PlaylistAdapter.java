@@ -10,8 +10,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -21,18 +24,22 @@ import com.liviu.smp2.R;
 import com.liviu.smp2.data.Song;
 import com.liviu.smp2.ui.ViewHolder;
 
-public class PlaylistAdapter extends BaseAdapter{
+public class PlaylistAdapter extends BaseAdapter implements OnTouchListener{
 	
 	// constants
 	private final String 			TAG = "PlaylistAdapter";
 	
 	// data
-	private HashMap<Integer, Song>  items;
+	private HashMap<Integer, Song>   items;
 	private HashMap<Integer, Bitmap> itemsBitmaps;
-	private Context					context;
-	private BitmapFactory.Options	options;
-	// services
+	private Context					 context;
+	private BitmapFactory.Options	 options;
+	
+	// services 
 	private LayoutInflater			lf;
+	
+	// listeners
+	private GestureDetector			gDetector;
 	
 	// views
 	private ViewHolder				viewHolder;
@@ -114,17 +121,28 @@ public class PlaylistAdapter extends BaseAdapter{
 			convertView	= (View)lf.inflate(R.layout.playlist_item, null);
 			viewHolder 	= new ViewHolder(context);
 			
-			viewHolder.songImage = (ImageView)convertView.findViewById(R.id.albumImageHolder);
-			viewHolder.songTitle = (TextView)convertView.findViewById(R.id.titleTextHolder);
-			viewHolder.songArtist = (TextView)convertView.findViewById(R.id.artistTextHolder);
+			viewHolder.songImage     = (ImageView)convertView.findViewById(R.id.albumImageHolder);
+			viewHolder.songTitle     = (TextView)convertView.findViewById(R.id.titleTextHolder);
+			viewHolder.songArtist    = (TextView)convertView.findViewById(R.id.artistTextHolder);
+			viewHolder.songIsPlaying = (View)convertView.findViewById(R.id.is_playing);
 			
 			convertView.setTag(viewHolder);
+			convertView.setOnTouchListener(this);
 		}
 		else
 			viewHolder = (ViewHolder)convertView.getTag();
 		
 		viewHolder.songTitle.setText(items.get(position).getTitle());
 		viewHolder.songArtist.setText(items.get(position).getArtist());
+		
+		
+		// update isPlaying indicator
+		if(items.get(position).isPlaying()){
+			viewHolder.songIsPlaying.setVisibility(View.VISIBLE);
+		}
+		else
+			viewHolder.songIsPlaying.setVisibility(View.GONE);
+		
 		if(items.get(position).getImagePath() != null){
 			if(items.get(position).getImagePath().length() > 0){
 				if(itemsBitmaps.get((int)items.get(position).getAlbumId()) != null){
@@ -146,5 +164,18 @@ public class PlaylistAdapter extends BaseAdapter{
 		}
 		
 		return convertView;
+	}
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		if(gDetector != null){
+			gDetector.onTouchEvent(event);
+		}
+		
+		return false;
+	}
+	
+	public void setGestureDetector(GestureDetector gd){
+		gDetector = gd;
 	}
 }

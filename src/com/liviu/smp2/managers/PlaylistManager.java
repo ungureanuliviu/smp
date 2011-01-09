@@ -169,7 +169,9 @@ public class PlaylistManager {
 		}		
 	}
 
-	public Playlist getCurrentPlaylist() {
+	public Playlist getCurrentPlaylist() {		
+		if(currentPlaylist != null)
+			currentPlaylist.getSongAt(currentPlaylistPosition).setPlaying(true);
 		return currentPlaylist;
 	}
 	
@@ -191,7 +193,7 @@ public class PlaylistManager {
 	
 	public void setActivityID(int activityID) {
 		Log.e(TAG, "setActivityID: " + activityID);
-		this.activityID = activityID;
+		this.activityID = activityID;		
 	}
 	
 	public int getActivityID() {

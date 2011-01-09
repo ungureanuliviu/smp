@@ -3,4 +3,5 @@
     <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">SMP2</string>
     <string name="menu_playlist">To Playlist</string>
+    <string name="loading_bar_text">Loading...</string>
 </resources>

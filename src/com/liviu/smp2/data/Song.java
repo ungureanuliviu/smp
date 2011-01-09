@@ -25,6 +25,7 @@ public class Song {
 	private int     colorTag;    			   // a color tag
 	private int		position;				   // the position of this song in a playlist
 	private boolean hasInfo; 	
+	private boolean isPlaying;
 	
 	public Song() { // create an empty song
 		
@@ -45,6 +46,7 @@ public class Song {
 		playCount  = 0; 							// 0 played time
 		colorTag   = Color.WHITE;
 		position   = -1;	
+		isPlaying  = false;
 	}
 	
 	public Song(int songID_) { // create an empty song
@@ -65,7 +67,16 @@ public class Song {
 		rate	   = 0;							    // no rate yet
 		playCount  = 0; 							// 0 played time
 		colorTag   = Color.WHITE;
-		position   = -1;	
+		position   = -1;
+		isPlaying  = false;
+	}
+	
+	public void setPlaying(boolean isPlaying) {
+		this.isPlaying = isPlaying;
+	}
+	
+	public boolean isPlaying() {
+		return isPlaying;
 	}
 	
 	public void setAlbumId(long albumId) {

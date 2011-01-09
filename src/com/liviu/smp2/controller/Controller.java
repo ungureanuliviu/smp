@@ -45,20 +45,10 @@ public class Controller {
 		dbManager			 = new DatabaseManager(context);		
 		
 		// service init
-		smpServiceConnection = new SmpServiceConnection(context);						
-		smpServiceConnection.bindSmpService();
+		smpServiceConnection = new SmpServiceConnection(context, activityFlag_);	
 		
-		switch (activityFlag_) {
-		case MAIN_ACTIVITY_ID:
-								smpServiceConnection.setActivityID(MAIN_ACTIVITY_ID);
-								break;
-		case PLAYLIST_ACTIVITY_ID:
-							    smpServiceConnection.setActivityID(PLAYLIST_ACTIVITY_ID);
-							    break;
-
-		default:
-			break;
-		}				
+		smpServiceConnection.startService();
+		smpServiceConnection.bindSmpService();			
 	}
 	
 	// player controls
@@ -119,4 +109,9 @@ public class Controller {
 		smpServiceConnection.playSongWithID(id);
 	}
 	*/
+
+	public Song getCurrentSong() {
+		return smpServiceConnection.getCurrentSong();
+		
+	}
 }

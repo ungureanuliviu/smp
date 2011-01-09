@@ -47,12 +47,13 @@ public final class R {
         public static final int button_play_count=0x7f05000c;
         public static final int button_rate=0x7f05000e;
         public static final int infoLayout=0x7f050014;
+        public static final int is_playing=0x7f050019;
         public static final int layout_bottom=0x7f050002;
         public static final int layout_center=0x7f050001;
         public static final int layout_play_count=0x7f05000b;
         public static final int layout_rate=0x7f05000d;
         public static final int layout_top=0x7f050000;
-        public static final int line=0x7f050019;
+        public static final int line=0x7f05001a;
         public static final int seekBarsecond=0x7f05000f;
         public static final int song_details_album=0x7f050008;
         public static final int song_details_holder=0x7f050006;
@@ -70,6 +71,7 @@ public final class R {
     public static final class string {
         public static final int app_name=0x7f040001;
         public static final int hello=0x7f040000;
+        public static final int loading_bar_text=0x7f040003;
         public static final int menu_playlist=0x7f040002;
     }
 }

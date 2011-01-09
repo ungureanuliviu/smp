@@ -1,12 +1,14 @@
 package com.liviu.smp2.services;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
 
+import com.liviu.smp2.controller.Controller;
 import com.liviu.smp2.controller.interfaces.OnSmpPlayerCompletetionListener;
 import com.liviu.smp2.controller.interfaces.OnSmpPlayerProgressChangedListener;
 import com.liviu.smp2.data.Song;
@@ -45,6 +47,7 @@ public class SmpPlayer extends MediaPlayer{
 	private int						duration;
 	private Thread					progressThread;
 	private Handler					handler;
+	private int						activityID;
 	
 	// flags
 	private boolean 				FLAG_IS_DATASOURCE_LOADED   = false;
@@ -54,7 +57,8 @@ public class SmpPlayer extends MediaPlayer{
 	private boolean					FLAG_PAUSE_PROGRESS_UPDATE  = false;
 	
 	// listeners
-	private OnSmpPlayerProgressChangedListener	onSmpPlayerProgressChanged;
+	private OnSmpPlayerProgressChangedListener				 	onSmpPlayerProgressChanged;
+	private HashMap<Integer, OnSmpPlayerCompletetionListener> 	onCompletitionListenersMap;
 	
 	
 	public SmpPlayer(Context context_) {
@@ -65,6 +69,7 @@ public class SmpPlayer extends MediaPlayer{
 		state   			= STATUS_IDLE;
 		elapsedSeconds 		= 0;
 		duration			= 0;
+		activityID			= Controller.MAIN_ACTIVITY_ID;
 		handler				= new Handler(){
 			public void handleMessage(android.os.Message msg) {
 				switch (msg.what) {
@@ -77,7 +82,13 @@ public class SmpPlayer extends MediaPlayer{
 					break;
 				}
 			};
-		};		
+		};	
+		onCompletitionListenersMap = new HashMap<Integer, OnSmpPlayerCompletetionListener>();
+	}
+	
+	public SmpPlayer setActivityID(int activityID_){
+		activityID = activityID_;
+		return this;
 	}
 	
 	@Override
@@ -237,16 +248,19 @@ public class SmpPlayer extends MediaPlayer{
 		onSmpPlayerProgressChanged = onSmpPlayerProgressChanged_;
 	}
 
-	public void setOnSmpPlayerCompletetionListener(OnSmpPlayerCompletetionListener onSmpPlayerCompletetionListener) {
-		Log.e(TAG, "setOnSmpPlayerCompletetionListener: " + onSmpPlayerCompletetionListener + " " + currentSong);
-		final Song 								localSong		= currentSong;
-		final OnSmpPlayerCompletetionListener	localListener	= onSmpPlayerCompletetionListener; 
+	public void setOnSmpPlayerCompletetionListener(int activityID_, OnSmpPlayerCompletetionListener onSmpPlayerCompletetionListener) {
+		Log.e(TAG, "setOnSmpPlayerCompletetionListener: " + activityID_ + " " +  onSmpPlayerCompletetionListener + " " + currentSong);		
+
+		activityID = activityID_;
+		onCompletitionListenersMap.put(activityID_, onSmpPlayerCompletetionListener);
 		
 		setOnCompletionListener(new OnCompletionListener() {
 			
 			@Override
 			public void onCompletion(MediaPlayer mp) {
-				localListener.onPlayerComplete(mp, ((SmpPlayer)mp).getCurrentSong());
+				Log.e(TAG, "onCompletion " + activityID + " " + onCompletitionListenersMap.get(activityID));
+				if(onCompletitionListenersMap.get(activityID) != null)
+					onCompletitionListenersMap.get(activityID).onPlayerComplete(mp, ((SmpPlayer)mp).getCurrentSong());
 			}
 		});
 	}
