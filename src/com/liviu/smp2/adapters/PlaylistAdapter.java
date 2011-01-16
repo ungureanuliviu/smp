@@ -1,5 +1,6 @@
 package com.liviu.smp2.adapters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -30,26 +31,26 @@ public class PlaylistAdapter extends BaseAdapter implements OnTouchListener{
 	private final String 			TAG = "PlaylistAdapter";
 	
 	// data
-	private HashMap<Integer, Song>   items;
+	private ArrayList<Song>  		 items;
 	private HashMap<Integer, Bitmap> itemsBitmaps;
 	private Context					 context;
 	private BitmapFactory.Options	 options;
 	
 	// services 
-	private LayoutInflater			lf;
+	private LayoutInflater			 lf;
 	
 	// listeners
-	private GestureDetector			gDetector;
+	private GestureDetector			 gDetector;
 	
 	// views
-	private ViewHolder				viewHolder;
+	private ViewHolder				 viewHolder;
 	
 	
 	public PlaylistAdapter(Context context_) {
 		
 		context		 = context_;
 		lf 		 	 = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		items		 = new HashMap<Integer, Song>();
+		items		 = new ArrayList<Song>();
 		itemsBitmaps = new HashMap<Integer, Bitmap>();
 		viewHolder	 = new ViewHolder(context_);
 		options		 = new BitmapFactory.Options();
@@ -58,9 +59,9 @@ public class PlaylistAdapter extends BaseAdapter implements OnTouchListener{
 	}
 	
 	public PlaylistAdapter	addItem(Song song){
-		int currentSize = items.size();
 		
-		items.put(currentSize, song);
+		song.setPlaying(false);
+		items.add(song);
 		
 		if(song.getImagePath() != null){
 			Log.e(TAG, "imagePath is: " + song.getImagePath() + " song: "  + song.getTitle());
@@ -177,5 +178,9 @@ public class PlaylistAdapter extends BaseAdapter implements OnTouchListener{
 	
 	public void setGestureDetector(GestureDetector gd){
 		gDetector = gd;
+	}
+
+	public void removeItemAt(int adapterPosition) {
+		Log.e(TAG, "remove item from playlist " + ((Song)items.remove(adapterPosition)));
 	}
 }

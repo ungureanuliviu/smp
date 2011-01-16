@@ -100,10 +100,10 @@ public class DatabaseManager {
 		HashMap<Integer, Song>   songsMap 	= new HashMap<Integer, Song>();
 		HashMap<Integer, String> songsImgs  = getAlbumArtFromMediaStore();
 		SongInfo				 songInfo	= new SongInfo();
-		Cursor 					c    		= contentResolver.query(URI_SONGS, PROJECTION_ALL_SONGS, null, null, null);
-		boolean 				flag 		= true;
-		Song					tempSong	= new Song();
-		int 					index		= 0;
+		Cursor 					 c    		= contentResolver.query(URI_SONGS, PROJECTION_ALL_SONGS, null, null, null);
+		boolean 				 flag 		= true;
+		Song					 tempSong	= new Song();
+		int 					 index		= 0;
 		
 		if(c == null){			
 			Log.e(TAG, "printAllSongs() c is null");
@@ -121,6 +121,7 @@ public class DatabaseManager {
 			tempSong = new Song();
 			tempSong.setId(c.getInt(9));
 			songInfo = getSongInfo(tempSong.getId());
+			Log.e(TAG, "SONGINFO: " + songInfo);
 			if(songInfo != null)
 				tempSong.setSongInfo(songInfo);
 			tempSong.setAlbumName(c.getString(0));
@@ -472,8 +473,7 @@ public class DatabaseManager {
 																	 Constants.SONG_PLAYED_COUNT_FIELD, //3
 																	 Constants.SONG_RATE_FIELD},        //4
 																	 Constants.SONG_ID_FIELD + "=" + songID,
-																	 null, null, null, null);
-		closeDatabase();
+																	 null, null, null, null);		
 		try{
 			c.moveToFirst();			
 			SongInfo songInfo = new SongInfo("no album",
@@ -483,8 +483,9 @@ public class DatabaseManager {
 											 c.getInt(3),
 											 c.getInt(4));
 			
-			//Log.e(TAG, "The song with ID " + song.getId() + " is in database");
+			Log.e(TAG, "The song with ID " + songID + " is in database");
 			c.close();
+			closeDatabase();
 			return songInfo;
 			
 		}
@@ -492,8 +493,32 @@ public class DatabaseManager {
 			Log.e(TAG, "getSongInfoss: The song with ID " + songID + " is NOT in database: I will insert it now!");	
 			if(!c.isClosed())
 				c.close();
-			
+			closeDatabase();
 			return null;			
+		}
+	}	
+	
+	public int getSongInfoCount(Song song){
+		int	songID = song.getId();
+		openDatabase();
+		Cursor c = db.query(Constants.TABLE_SONGS_INFO, new String[]{Constants.SONG_PLAYED_COUNT_FIELD}, //0
+																	 Constants.SONG_ID_FIELD + "=" + songID,
+																	 null, null, null, null);				
+		try{
+			c.moveToFirst();			
+				int count = c.getInt(0);
+			c.close();
+			closeDatabase();
+			Log.e(TAG, "getSongInfoCount for " + song.getTitle() + " is " + count);
+			return count;
+			
+		}
+		catch(RuntimeException e){
+			Log.e(TAG, "getSongInfoCount(): The song with ID " + songID + " is NOT in database");
+			c.close();	
+			closeDatabase();
+			Log.e(TAG, "getSongInfoCount for " + song.getTitle() + " is 0");
+			return 0;
 		}
 	}	
 	

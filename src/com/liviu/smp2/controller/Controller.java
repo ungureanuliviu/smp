@@ -115,4 +115,18 @@ public class Controller {
 		return smpServiceConnection.getCurrentSong();
 		
 	}
+
+	public void setSongFavorite(boolean isFavorite, Song song) {
+		smpServiceConnection.setSongFavorite(isFavorite, song);
+	}
+
+	public void setSongIgnore(boolean isIgnored, Song ignSong) {
+		smpServiceConnection.setSongIgnore(isIgnored, ignSong);
+		
+	}
+
+	public void setSongRate(int newRate, Song song) {
+		smpServiceConnection.setSongRate(newRate, song);
+		
+	}
 }

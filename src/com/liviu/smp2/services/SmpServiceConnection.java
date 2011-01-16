@@ -295,5 +295,18 @@ public class SmpServiceConnection implements ServiceConnection{
 			return null;
 		}
 
+	public void setSongFavorite(boolean isFavorite, Song song) {
+		boundSmpService.setSongFavorite(isFavorite, song);
+	}
+
+	public void setSongIgnore(boolean isIgnored, Song ignSong) {
+		boundSmpService.setSongIgnore(isIgnored, ignSong);
+		
+	}
+
+	public void setSongRate(int newRate, Song song) {
+		boundSmpService.setSongRate(newRate, song);		
+	}
+
 
 }

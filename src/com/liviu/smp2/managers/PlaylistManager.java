@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Adapter;
 
 import com.liviu.smp2.controller.Controller;
 import com.liviu.smp2.controller.interfaces.OnPlaylistStatusChanged;
@@ -225,7 +226,39 @@ public class PlaylistManager {
 	}
 
 	public void updatePlayingCount(Song song) {
-		dbManager.updatePlayedCount(song.getPlayCount() + 1, song);
+		dbManager.updatePlayedCount(dbManager.getSongInfoCount(song) + 1, song);
 	}
 
+	public void setSongFavorite(boolean isFavorite, Song song) {
+		dbManager.updateFavorite(isFavorite, song);
+		
+		try{
+			Song favSong = (Song)currentPlaylist.getSongWithID(song.getId())[0];
+			if(favSong != null)
+				((Song)currentPlaylist.getSongWithID(song.getId())[0]).setFavorite(isFavorite);			
+		}
+		catch (ClassCastException e) { 	e.printStackTrace(); }
+	}
+
+	public void setSongIgnore(boolean isIgnored, Song song){
+		dbManager.updateIgnore(isIgnored, song);
+		try{
+			Song favSong = (Song)currentPlaylist.getSongWithID(song.getId())[0];
+			if(favSong != null)
+				((Song)currentPlaylist.getSongWithID(song.getId())[0]).setFavorite(isIgnored);			
+		}
+		catch (ClassCastException e) { 	e.printStackTrace(); }		
+		
+	}
+
+	public void setSongRate(int newRate, Song song) {
+		dbManager.updateRate(newRate, song);
+		try{
+			Song rateSong = (Song)currentPlaylist.getSongWithID(song.getId())[0];
+			if(rateSong != null){
+				((Song)currentPlaylist.getSongWithID(song.getId())[0]).setRate(newRate);
+			}
+		}catch(ClassCastException e){ e.printStackTrace(); }
+		
+	}
 }

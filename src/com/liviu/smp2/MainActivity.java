@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.liviu.smp2.controller.Controller;
@@ -68,8 +70,7 @@ public class MainActivity extends Activity implements
         playSongButton.setOnClickListener(this);
         nextSongButton.setOnClickListener(this);
         progressBar.setOnSeekBarChangeListener(this);
-        prevSongButton.setOnClickListener(this);
-        
+        prevSongButton.setOnClickListener(this);             
                 
     }
         
@@ -91,13 +92,15 @@ public class MainActivity extends Activity implements
     public void onConfigurationChanged(Configuration newConfig) {    
     	super.onConfigurationChanged(newConfig);
     }
-        
-    
+            
     @Override
     protected void onResume() {
     	super.onResume();	
     	Log.e(TAG, "onResume()");
     	controller.onResumeController();
+        controller.setOnPlaylistStatusChanged(this);
+        controller.setOnSmpPlayerProgressChanged(this);
+        controller.setOnSmpPlayerCompletetionsListener(Controller.MAIN_ACTIVITY_ID, this);
     }
 
 	@Override

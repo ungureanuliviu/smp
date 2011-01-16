@@ -73,9 +73,10 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 		adapterPosition = 0;
 		
 		
+		
 		// setting up
 		loadingDialog.setTitle(getText(R.string.loading_bar_text));
-		loadingDialog.setCancelable(false);
+		//loadingDialog.setCancelable(false);
 		loadingDialog.setCanceledOnTouchOutside(false);
 		gestureDetector.setOnDoubleTapListener(this);
 		adapter.setGestureDetector(gestureDetector);
@@ -119,6 +120,17 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 						adapter.setItems(controller.getCurrentPlaylistAsHashmap());						
 						listView.setAdapter(adapter);
 						loadingDialog.dismiss();
+						
+						Song tempSong = controller.getCurrentSong();
+						Log.e(TAG, "tempSong: " + tempSong);
+						
+						if(tempSong != null)
+							for(int i = 0; i < adapter.getCount(); i++)							
+									if(adapter.getItem(i).getId() == tempSong.getId()){
+										adapter.getItem(i).setPlaying(true);
+										adapter.notifyDataSetChanged();
+										break;
+									}																			
 			break;
 
 		default:
@@ -236,7 +248,7 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 			menu.setHeaderTitle(selectedSong.getTitle());		
 			menu.add(0, MENU_PLAY,   0, getText(R.string.context_menu_play));					
 			menu.add(0, MENU_FAV,    1, (selectedSong.isFavorite() == true ? getText(R.string.context_menu_remove_from_fav) : getText(R.string.context_menu_add_to_fav)));
-			menu.add(0, MENU_RATE,   2, getText(R.string.context_menu_rate));
+			menu.add(0, MENU_RATE,   2, getText(R.string.context_menu_rate) + "(" + selectedSong.getRate() + ")");
 			menu.add(0, MENU_IGNORE, 3, (selectedSong.isIgnored() == true ? getText(R.string.context_menu_remove_ignore) : getText(R.string.context_menu_add_to_ignore)));
 			menu.add(0, MENU_DELETE, 4, getText(R.string.context_menu_delete));
 		}
@@ -247,6 +259,46 @@ public class PlaylistActivity extends Activity implements OnPlaylistStatusChange
 	public boolean onContextItemSelected(MenuItem item) {	
 		
 		Log.e(TAG, "selected menu ID: " + item.getItemId());
+		switch(item.getItemId()){
+			case MENU_PLAY:
+						  controller.sendPlayerCommand(SmpPlayer.COMMAND_PLAY_BY_ID, adapter.getItem(adapterPosition).getId());
+			   	          for(int i = 0; i < adapter.getCount(); i++){
+						  	 if(adapter.getItem(i).isPlaying() && adapter.getItem(i).getId() != adapter.getItem(adapterPosition).getId()){
+								adapter.getItem(i).setPlaying(false);
+							 }
+						  }
+							
+						  adapter.getItem(adapterPosition).setPlaying(true);
+						  adapter.notifyDataSetChanged();						  
+						  break;
+			case MENU_FAV:
+						 Song selectedSong = (Song)adapter.getItem(adapterPosition);
+						 if(selectedSong != null){
+							 controller.setSongFavorite(!selectedSong.isFavorite(), selectedSong);
+							 ((Song)adapter.getItem(adapterPosition)).setFavorite(!selectedSong.isFavorite());
+						 }
+						 break;
+			case MENU_IGNORE:
+							Song ignSong = (Song)adapter.getItem(adapterPosition);
+							if(ignSong != null){
+								controller.setSongIgnore(!ignSong.isIgnored(), ignSong);
+								((Song)adapter.getItem(adapterPosition)).setIgnored(!ignSong.isIgnored());
+							}
+							break;
+			case MENU_RATE:
+							Song rateSong = (Song)adapter.getItem(adapterPosition);
+							if(rateSong != null){
+								controller.setSongRate(20, rateSong);
+								((Song)adapter.getItem(adapterPosition)).setRate(20);
+							}
+							break;
+			case MENU_DELETE:
+							adapter.removeItemAt(adapterPosition);
+							adapter.notifyDataSetChanged();
+							break;
+			default:	
+				   	break;
+		}
 		return super.onContextItemSelected(item);
 	}
 

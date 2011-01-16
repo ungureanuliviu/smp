@@ -296,4 +296,18 @@ public class SmpService extends Service implements OnErrorListener{
 		
 	}
 
+	public void setSongFavorite(boolean isFavorite, Song song) {
+		playlistManager.setSongFavorite(isFavorite, song);
+	}
+
+	public void setSongIgnore(boolean isIgnored, Song ignSong) {
+		playlistManager.setSongIgnore(isIgnored, ignSong);
+		
+	}
+
+	public void setSongRate(int newRate, Song song) {
+		playlistManager.setSongRate(newRate, song);
+	}
+
+
 }
